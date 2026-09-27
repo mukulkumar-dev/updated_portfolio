@@ -20,10 +20,18 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const handleLoaded = useCallback(() => setIsLoading(false), []);
 
-  // Sections mount after the intro, so honour links like /#contact once they exist.
+  // Always start at the top of the home page on load/refresh: stop the browser restoring
+  // the previous scroll position and drop any section hash (e.g. #contact) from the URL.
   useEffect(() => {
-    if (isLoading || !window.location.hash) return;
-    document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
+    window.history.scrollRestoration = "manual";
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading) window.scrollTo(0, 0);
   }, [isLoading]);
 
   return (
